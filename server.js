@@ -1,16 +1,15 @@
+const dotenv = require('dotenv')
+dotenv.config()
 const express = require("express")
+const cors = require("cors")
+const router = require("./routes")
 
 const app = express()
+app.use(cors())
+app.use(router)
 
+const Port = process.env.PORT || 8000
 
-app.get('/', (req, res) => {
-    res.send("This is home page")
-})
-
-app.get('/registration', (req, res) => {
-    res.send("This is registration page")
-})
-
-app.listen(8000, () => {
+app.listen(Port, () => {
     console.log("hello this is one year academy");
 })
