@@ -1,5 +1,7 @@
 const Users = require('../models/userModel')
-const { validateEmail, validateLength } = require('../helpers/validation')
+const { validateEmail, validateLength, validateUsername } = require('../helpers/validation')
+const bcrypt = require('bcrypt');
+const { jwToken } = require('../helpers/token');
 
 exports.newUser = async (req, res) => {
     try {
@@ -42,18 +44,34 @@ exports.newUser = async (req, res) => {
             })
         }
 
+        if (!validateLength(password, 8, 40)) {
+            return res.status(400).json({
+                message: "Password should be minimum 8 characters"
+            })
+        }
+
+        // bcrypt-password
+        const crypted = await bcrypt.hash(password, 10)
+
+        // validate Username
+        let tempUsername = fName + lName
+        let finalUsername = await validateUsername(tempUsername)
+
         const user = await new Users({
             fName,
             lName,
             email,
-            username,
-            password,
+            username: finalUsername,
+            password: crypted,
             bMonth,
             bDay,
             bYear,
             gender,
             verified
         }).save()
+
+        const emailToken = jwToken({ id: user._id.toString() }, "30m")
+        console.log(emailToken);
 
         res.send(user)
 
