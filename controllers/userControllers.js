@@ -120,3 +120,36 @@ exports.verifiedUser = async (req, res) => {
         })
     }
 }
+
+exports.login = async (req, res) => {
+    try {
+        const { email, password } = req.body
+        const user = await Users.findOne({ email })
+        if (!user) {
+            return res.status(400).json({
+                message: "The email address you entered is not connected to an account"
+            })
+        }
+        const check = await bcrypt.compare(password, user.password)
+        if (!check) {
+            return res.status(400).json({
+                message: "Invalid credentials. Please try again"
+            })
+        }
+        const token = jwToken({ id: user._id.toString() }, "7d")
+        res.send({
+            id: user._id,
+            username: user.username,
+            profilePicture: user.profilePicture,
+            fName: user.fName,
+            lName: user.lName,
+            token: token,
+            verified: user.verified,
+            message: "Login success"
+        })
+    } catch (error) {
+        res.status(404).json({
+            message: err.message
+        })
+    }
+}
