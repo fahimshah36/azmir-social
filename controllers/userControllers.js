@@ -85,6 +85,7 @@ exports.newUser = async (req, res) => {
             profilePicture: user.profilePicture,
             fName: user.fName,
             lName: user.lName,
+            email: user.email,
             token: token,
             verified: user.verified,
             message: "Registration success! PLease activate your email to start"
@@ -143,6 +144,7 @@ exports.login = async (req, res) => {
             profilePicture: user.profilePicture,
             fName: user.fName,
             lName: user.lName,
+            email: user.email,
             token: token,
             verified: user.verified,
             message: "Login success"
