@@ -101,9 +101,16 @@ exports.newUser = async (req, res) => {
 
 exports.verifiedUser = async (req, res) => {
     try {
+        const verified = req.user.id
         const { token } = req.body
         const user = jwt.verify(token, process.env.SECRET_TOKEN)
         const check = await Users.findById(user.id)
+
+        if (verified !== user.id) {
+            return res.status(400).json({
+                message: "You don't have authorization to complete this operation"
+            })
+        }
 
         if (check.verified === true) {
             return res.status(400).json({
@@ -149,6 +156,30 @@ exports.login = async (req, res) => {
             verified: user.verified,
             message: "Login success"
         })
+    } catch (error) {
+        res.status(404).json({
+            message: err.message
+        })
+    }
+}
+
+exports.reVerification = async (req, res) => {
+    try {
+        let id = req.user.id;
+        const user = await Users.findById(id)
+        if (user.verified === true) {
+            return res.status(400).json({
+                message: "This account is already activated"
+            })
+        }
+        const emailToken = jwToken({ id: user._id.toString() }, "30m")
+        const url = `${process.env.BASE_URL}/activate/${emailToken}`
+
+        sendVerifiedEmail(user.email, user.fName, url)
+        return res.status(200).json({
+            message: "Email verification link has been sent to your account"
+        })
+
     } catch (error) {
         res.status(404).json({
             message: err.message
