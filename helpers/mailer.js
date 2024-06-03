@@ -41,3 +41,33 @@ exports.sendVerifiedEmail = (email, name, url) => {
         return res
     })
 }
+// send reset-code process
+exports.sendResetCode = (email, name, code) => {
+    auth.setCredentials({
+        refresh_token: MAILING_REFRESH
+    })
+    const accessToken = auth.getAccessToken()
+    const stmp = nodemailer.createTransport(
+        {
+            service: 'gmail',
+            auth: {
+                type: "OAuth2",
+                user: EMAIL,
+                clientId: MAILING_ID,
+                clientSecret: MAILING_SECRET,
+                refreshToken: MAILING_REFRESH,
+                accessToken
+            }
+        }
+    )
+    const mailOptions = {
+        from: EMAIL,
+        to: email,
+        subject: "Reset Application Password",
+        html: `<div style=" padding: 20px; border: 1px solid #ddd; border-radius: 5px; text-align: center; " > <h1 style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"> Hello ${name} What's Up </h1> <p style=" color: #333; font-size: 16px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; " > Hello ${name} hope you are doing well. Please confirm your verification email to start journey with us </p> <a style=" border: 1px solid #666; padding: 8px 15px; border-radius: 5px; text-decoration: none; color: #333; margin-top: 20px; display: inline-block; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 20px; " onMouseOver="this.style.background='#ddd'" onMouseLeave="this.style.background='transparent'">${code}</a ></div>`
+    }
+    stmp.sendMail(mailOptions, (err, res) => {
+        if (err) return err;
+        return res
+    })
+}

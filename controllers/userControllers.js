@@ -3,7 +3,9 @@ const { validateEmail, validateLength, validateUsername } = require('../helpers/
 const bcrypt = require('bcrypt');
 const { jwToken } = require('../helpers/token');
 const jwt = require('jsonwebtoken')
-const { sendVerifiedEmail } = require('../helpers/mailer');
+const { sendVerifiedEmail, sendResetCode } = require('../helpers/mailer');
+const Code = require('../models/Code');
+const { generateCode } = require('../helpers/generatCode');
 
 exports.newUser = async (req, res) => {
     try {
@@ -156,7 +158,7 @@ exports.login = async (req, res) => {
             verified: user.verified,
             message: "Login success"
         })
-    } catch (error) {
+    } catch (err) {
         res.status(404).json({
             message: err.message
         })
@@ -180,7 +182,50 @@ exports.reVerification = async (req, res) => {
             message: "Email verification link has been sent to your account"
         })
 
-    } catch (error) {
+    } catch (err) {
+        res.status(404).json({
+            message: err.message
+        })
+    }
+}
+
+exports.findUser = async (req, res) => {
+    try {
+        const { email } = req.body
+        const matchEmail = await Users.findOne({ email }).select("-password")
+        if (!matchEmail) {
+            return res.status(404).json({
+                message: "Email doesn't exist"
+            })
+        }
+        res.status(200).json({
+            email: matchEmail.email,
+            profilePicture: matchEmail.profilePicture
+        })
+    } catch (err) {
+        res.status(404).json({
+            message: err.message
+        })
+    }
+}
+
+exports.resetCode = async (req, res) => {
+    try {
+        const { email } = req.body
+        const user = await Users.findOne({ email }).select("-password");
+        await Code.findOneAndDelete({ user: user._id })
+        const code = generateCode(5)
+        const saveCode = await new Code({
+            user: user._id,
+            code
+        }).save()
+
+        sendResetCode(user.email, user.fName, code)
+        return res.status(200).json({
+            message: "Reset code has been sent to your email"
+        })
+
+    } catch (err) {
         res.status(404).json({
             message: err.message
         })
