@@ -253,3 +253,19 @@ exports.verifyCode = async (req, res) => {
         })
     }
 }
+
+exports.changePassword = async (req, res) => {
+    try {
+        const { email, password } = req.body
+        const cryptedPassword = await bcrypt.hash(password, 10)
+        await Users.findOneAndUpdate({ email }, { password: cryptedPassword })
+        return res.status(200).json({
+            message: "Password successfully changed"
+        })
+
+    } catch (err) {
+        res.status(404).json({
+            message: err.message
+        })
+    }
+}
