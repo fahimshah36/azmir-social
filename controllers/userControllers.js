@@ -231,3 +231,25 @@ exports.resetCode = async (req, res) => {
         })
     }
 }
+
+exports.verifyCode = async (req, res) => {
+    try {
+        const { email, code } = req.body
+        const user = await Users.findOne({ email })
+        const decode = await Code.findOne({ user: user._id })
+
+        if (decode.code !== code) {
+            return res.status(404).json({
+                message: "Code doesn't matched"
+            })
+        }
+        return res.status(200).json({
+            message: "Thank you"
+        })
+
+    } catch (err) {
+        res.status(404).json({
+            message: err.message
+        })
+    }
+}
