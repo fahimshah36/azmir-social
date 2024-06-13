@@ -14,7 +14,7 @@ exports.createPost = async (req, res) => {
 
 exports.getAllPosts = async (req, res) => {
     try {
-        const post = await Post.find().populate("user", "profilePicture cover username fName lName")
+        const post = await Post.find()
         res.json(post)
 
     } catch (err) {
