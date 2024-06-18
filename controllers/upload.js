@@ -26,6 +26,24 @@ exports.uploadImages = async (req, res) => {
     }
 }
 
+exports.listImage = async (req, res) => {
+    const { path, sort, max } = req.body
+
+    cloudinary.v2.search
+        .expression(`${path}`)
+        .sort_by('public_id', `${sort}`)
+        .max_results(max)
+        .execute()
+        .then((result) => {
+            res.json(result)
+        })
+        .catch((error) => {
+            es.status(404).json({
+                message: error.message
+            })
+        })
+}
+
 
 // upload to cloudinary function
 const uploadToCloudinay = async (file, path) => {
