@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken')
 const { sendVerifiedEmail, sendResetCode } = require('../helpers/mailer');
 const Code = require('../models/Code');
 const { generateCode } = require('../helpers/generatCode');
+const Posts = require('../models/Posts');
 
 exports.newUser = async (req, res) => {
     try {
@@ -285,7 +286,9 @@ exports.getUser = async (req, res) => {
                 ok: false
             })
         }
-        res.send(getProfile)
+        const posts = await Posts.find({ user: getProfile._id }).populate("user")
+
+        res.json({ ...getProfile.toObject(), posts });
 
     } catch (error) {
         res.status(404).json({
