@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { newUser, verifiedUser, login, reVerification, findUser, resetCode, verifyCode, changePassword, getUser } = require('../../controllers/userControllers')
+const { newUser, verifiedUser, login, reVerification, findUser, resetCode, verifyCode, changePassword, getUser, updateProfilePicture } = require('../../controllers/userControllers')
 const { authUser } = require('../../middleware/auth')
 
 router.post('/', newUser)
@@ -12,5 +12,6 @@ router.post('/resetcode', resetCode)
 router.post('/verifyresetcode', verifyCode)
 router.post('/changepassword', changePassword)
 router.get('/getuser/:username', authUser, getUser)
+router.put('/updateprofilepicture', authUser, updateProfilePicture)
 
 module.exports = router
