@@ -310,3 +310,17 @@ exports.updateProfilePicture = async (req, res) => {
         })
     }
 }
+
+exports.updateCoverPicture = async (req, res) => {
+    try {
+        const { url } = req.body
+        await Users.findByIdAndUpdate(req.user.id, {
+            cover: url
+        })
+        res.json(url)
+    } catch (error) {
+        res.status(404).json({
+            message: error.message
+        })
+    }
+}
