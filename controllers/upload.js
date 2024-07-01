@@ -38,7 +38,7 @@ exports.listImage = async (req, res) => {
             res.json(result)
         })
         .catch((error) => {
-            es.status(404).json({
+            res.status(404).json({
                 message: error.message
             })
         })
