@@ -286,7 +286,7 @@ exports.getUser = async (req, res) => {
                 ok: false
             })
         }
-        const posts = await Posts.find({ user: getProfile._id }).populate("user").sort({createdAt: -1})
+        const posts = await Posts.find({ user: getProfile._id }).populate("user").sort({ createdAt: -1 })
 
         res.json({ ...getProfile.toObject(), posts });
 
@@ -318,6 +318,22 @@ exports.updateCoverPicture = async (req, res) => {
             cover: url
         })
         res.json(url)
+    } catch (error) {
+        res.status(404).json({
+            message: error.message
+        })
+    }
+}
+
+exports.updateDetails = async (req, res) => {
+    try {
+        const { infos } = req.body
+        const update = await Users.findByIdAndUpdate(req.user.id, {
+            details: infos
+        }, {
+            new: true
+        })
+        res.send(update.details)
     } catch (error) {
         res.status(404).json({
             message: error.message
