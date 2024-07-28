@@ -498,12 +498,15 @@ exports.acceptRequest = async (req, res) => {
             let sender = await Users.findById(req.params.id)
 
             if (receiver.request.includes(sender._id)) {
-                await receiver.update({
+
+                await Users.findByIdAndUpdate(receiver._id, {
                     $push: { friends: sender._id, following: sender._id }
-                })
-                await sender.update({
+                }, { new: true })
+
+                await Users.findByIdAndUpdate(sender._id, {
                     $push: { friends: receiver._id, followers: receiver._id }
-                })
+                }, { new: true })
+
                 await receiver.updateOne({
                     $pull: { request: sender._id }
                 })
@@ -530,12 +533,10 @@ exports.unFriend = async (req, res) => {
             let receiver = await Users.findById(req.params.id)
 
             if (receiver.friends.includes(sender._id) && sender.friends.includes(receiver._id)) {
-                await receiver.update({
-                    $pull: { friends: sender._id, following: sender._id, followers: sender._id }
-                })
-                await sender.update({
-                    $pull: { friends: receiver._id, following: receiver._id, followers: receiver._id }
-                })
+                await Users.findByIdAndUpdate(receiver._id, { $pull: { friends: sender._id, following: sender._id, followers: sender._id } }, { new: true })
+
+                await Users.findByIdAndUpdate(sender._id, { $pull: { friends: receiver._id, following: receiver._id, followers: receiver._id } }, { new: true })
+
                 res.json({ message: "Unfriend" })
             } else {
                 return res.json({ message: "Already unfriend" })
@@ -559,9 +560,7 @@ exports.deleteRequest = async (req, res) => {
             let sender = await Users.findById(req.params.id)
 
             if (receiver.request.includes(sender._id)) {
-                await receiver.update({
-                    $pull: { request: sender._id, followers: sender._id }
-                })
+                await Users.findByIdAndUpdate(receiver._id, { $pull: { request: sender._id, followers: sender._id } }, { new: true })
                 await sender.updateOne({
                     $pull: { following: receiver._id }
                 })
