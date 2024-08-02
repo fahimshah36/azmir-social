@@ -8,7 +8,7 @@ const Reacts = mongoose.Schema({
         enum: ["like", "love", "haha", "angry", "wow", "sad"],
         require: true
     },
-    postRef: {
+    postId: {
         type: ObjectId,
         ref: "posts"
     },
