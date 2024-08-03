@@ -77,10 +77,6 @@ exports.getAllReacts = async (req, res) => {
             },
         ]
 
-        AllReacts.sort((a, b) => {
-            return b.count - a.count
-        })
-
         res.json({ AllReacts, check: check?.react, total: reactArray.length })
     } catch (error) {
         res.status(404).json({
