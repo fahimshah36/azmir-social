@@ -10,7 +10,6 @@ exports.reactPost = async (req, res) => {
             postId: postId,
             reactBy: req.user.id
         })
-        console.log(check);
 
         if (check === null) {
             const newReact = new Reacts({
@@ -42,7 +41,47 @@ exports.getAllReacts = async (req, res) => {
             postId: req.params.id,
             reactBy: req.user.id
         })
-        res.json({ reactArray, check: check?.react })
+
+        let newReacts = reactArray.reduce((group, react) => {
+            let key = react["react"]
+            group[key] = group[key] || []
+            group[key].push(react)
+            return group
+        }, {})
+
+
+        const AllReacts = [
+            {
+                react: "love",
+                count: newReacts.love ? newReacts.love.length : 0
+            },
+            {
+                react: "haha",
+                count: newReacts.haha ? newReacts.haha.length : 0
+            },
+            {
+                react: "Wow",
+                count: newReacts.Wow ? newReacts.Wow.length : 0
+            },
+            {
+                react: "sad",
+                count: newReacts.sad ? newReacts.sad.length : 0
+            },
+            {
+                react: "angry",
+                count: newReacts.angry ? newReacts.angry.length : 0
+            },
+            {
+                react: "like",
+                count: newReacts.like ? newReacts.like.length : 0
+            },
+        ]
+
+        AllReacts.sort((a, b) => {
+            return b.count - a.count
+        })
+
+        res.json({ AllReacts, check: check?.react, total: reactArray.length })
     } catch (error) {
         res.status(404).json({
             message: error.message
