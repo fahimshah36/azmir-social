@@ -23,3 +23,27 @@ exports.getAllPosts = async (req, res) => {
         })
     }
 }
+
+
+exports.comment = async (req, res) => {
+    try {
+        const { comment, image, postId } = req.body
+        const newComment = await Post.findByIdAndUpdate(postId, {
+            $push: {
+                comments: {
+                    comment: comment,
+                    image: image,
+                    commentedBy: req.user.id,
+                    commentedAt: new Date()
+                }
+            }
+        }, {
+            new: true
+        }).populate("comments.commentedBy", "profilePicture username fName lName")
+        res.json(newComment.comments)
+    } catch (error) {
+        res.status(404).json({
+            message: error.message
+        })
+    }
+}
