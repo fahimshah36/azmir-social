@@ -314,7 +314,7 @@ exports.getUser = async (req, res) => {
             friendShip.requestReceived = true
         }
 
-        const posts = await Posts.find({ user: getProfile._id }).populate("user").sort({ createdAt: -1 })
+        const posts = await Posts.find({ user: getProfile._id }).populate("user").populate("comments.commentedBy", "profilePicture username fName lName").sort({ createdAt: -1 })
 
         await getProfile.populate("friends", "fName lName username profilePicture")
 
