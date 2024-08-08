@@ -1,3 +1,4 @@
+const { default: mongoose } = require('mongoose')
 const Post = require('../models/Posts')
 const User = require('../models/userModel')
 
@@ -19,10 +20,10 @@ exports.getAllPosts = async (req, res) => {
         const followingTemp = await User.findById(req.user.id).select("following")
         const following = followingTemp.following
         const promises = following.map((user) => {
-            return Post.find({ user: user }).populate("user", "profilePicture cover fName lName username").populate("comments.commentedBy", "profilePicture username fName lName cover").sort({ createdAt: -1 })
+            return Post.find({ user: user }).populate("user", "profilePicture cover fName lName username gender").populate("comments.commentedBy", "profilePicture username fName lName cover").sort({ createdAt: -1 })
         })
         const followingPosts = await (await (Promise.all(promises))).flat()
-        const userPost = await Post.find({ user: req.user.id }).populate("user", "profilePicture cover fName lName username")
+        const userPost = await Post.find({ user: req.user.id }).populate("user", "profilePicture cover fName lName username gender")
         followingPosts.push(...[...userPost])
         followingPosts.sort((a, b) => {
             return b.createdAt - a.createdAt
@@ -61,7 +62,7 @@ exports.comment = async (req, res) => {
 
 exports.savePost = async (req, res) => {
     try {
-        const postId = req.params.id
+        const postId = req.params.id;
         const user = await User.findById(req.user.id)
         const check = user?.savePost.find((a) => a.post.toString() == postId)
         if (check) {

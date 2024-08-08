@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const Reacts = require('../models/Reacts')
-const Users = require('../models/userModel')
+const User = require('../models/userModel')
 
 
 exports.reactPost = async (req, res) => {
@@ -77,7 +77,11 @@ exports.getAllReacts = async (req, res) => {
             },
         ]
 
-        res.json({ AllReacts, check: check?.react, total: reactArray.length })
+        // check if post is already saved or not
+        const user = await User.findById(req.user.id)
+        const isPostSave = user?.savePost.find((x) => x.post.toString() == req.params.id)
+
+        res.json({ AllReacts, check: check?.react, total: reactArray.length, isPostSave: isPostSave ? true : false })
     } catch (error) {
         res.status(404).json({
             message: error.message
