@@ -1,4 +1,3 @@
-const { default: mongoose } = require('mongoose')
 const Post = require('../models/Posts')
 const User = require('../models/userModel')
 
@@ -83,6 +82,17 @@ exports.savePost = async (req, res) => {
                 }
             })
         }
+    } catch (error) {
+        res.status(404).json({
+            message: error.message
+        })
+    }
+}
+
+exports.removePost = async (req, res) => {
+    try {
+        await Post.findByIdAndDelete(req.params.id)
+        res.json({ status: "done" })
     } catch (error) {
         res.status(404).json({
             message: error.message
