@@ -58,3 +58,33 @@ exports.comment = async (req, res) => {
         })
     }
 }
+
+exports.savePost = async (req, res) => {
+    try {
+        const postId = req.params.id
+        const user = await User.findById(req.user.id)
+        const check = user?.savePost.find((a) => a.post.toString() == postId)
+        if (check) {
+            await User.findByIdAndUpdate(req.user.id, {
+                $pull: {
+                    savePost: {
+                        _id: check._id
+                    }
+                }
+            })
+        } else {
+            await User.findByIdAndUpdate(req.user.id, {
+                $push: {
+                    savePost: {
+                        post: postId,
+                        savedAt: new Date()
+                    }
+                }
+            })
+        }
+    } catch (error) {
+        res.status(404).json({
+            message: error.message
+        })
+    }
+}
