@@ -4,6 +4,7 @@ const User = require('../models/userModel')
 exports.createPost = async (req, res) => {
     try {
         const post = await new Post(req.body).save()
+        await post.populate("user", "profilePicture cover fName lName username")
         res.json(post)
 
     } catch (err) {
