@@ -644,4 +644,29 @@ exports.getSearchHistory = async (req, res) => {
     }
 }
 
+exports.removeSearchHistory = async (req, res) => {
+    try {
+        const { searchUser } = req.body
+        console.log(searchUser);
+
+        await Users.updateOne(
+            {
+                _id: req.user.id
+            },
+            {
+                $pull: {
+                    search: {
+                        user: searchUser
+                    }
+                }
+            }
+        )
+
+    } catch (error) {
+        res.status(404).json({
+            message: error.message
+        })
+    }
+}
+
 
