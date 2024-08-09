@@ -647,9 +647,8 @@ exports.getSearchHistory = async (req, res) => {
 exports.removeSearchHistory = async (req, res) => {
     try {
         const { searchUser } = req.body
-        console.log(searchUser);
 
-        await Users.updateOne(
+        const result = await Users.updateOne(
             {
                 _id: req.user.id
             },
@@ -661,6 +660,14 @@ exports.removeSearchHistory = async (req, res) => {
                 }
             }
         )
+
+        if (result.modifiedCount > 0) {
+            res.json({ message: "ok" })
+        } else {
+            res.status(404).json({
+                message: "Not found"
+            })
+        }
 
     } catch (error) {
         res.status(404).json({
