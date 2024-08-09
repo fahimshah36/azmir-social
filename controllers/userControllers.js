@@ -632,41 +632,5 @@ exports.addSearchHistory = async (req, res) => {
     }
 }
 
-exports.getSearchHistory = async (req, res) => {
-    try {
-        const getSearch = await Users.findById(req.user.id).select("search").populate("search.user", "fName lName username profilePicture")
-        res.json(getSearch.search)
-
-    } catch (error) {
-        res.status(404).json({
-            message: error.message
-        })
-    }
-}
-
-exports.removeSearchHistory = async (req, res) => {
-    try {
-        const { searchUser } = req.body
-        console.log(searchUser);
-
-        await Users.updateOne(
-            {
-                _id: req.user.id
-            },
-            {
-                $pull: {
-                    search: {
-                        user: searchUser
-                    }
-                }
-            }
-        )
-
-    } catch (error) {
-        res.status(404).json({
-            message: error.message
-        })
-    }
-}
 
 
