@@ -676,4 +676,23 @@ exports.removeSearchHistory = async (req, res) => {
     }
 }
 
+exports.getAllFriends = async (req, res) => {
+    try {
+        const user = await Users.findById(req.user.id).select("friends request").populate("friends", "fName lName profilePicture username").populate("request", "fName lName profilePicture username")
 
+        // if user sent request part
+        const userSentRequest = await Users.find({
+            request: req.user.id
+        }).select("fName lName profilePicture username")
+
+        res.json({
+            friends: user.friends,
+            request: user.request,
+            sentRequest: userSentRequest
+        })
+    } catch (error) {
+        res.status(404).json({
+            message: error.message
+        })
+    }
+}

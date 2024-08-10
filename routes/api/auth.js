@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { newUser, verifiedUser, login, reVerification, findUser, resetCode, verifyCode, changePassword, getUser, updateProfilePicture, updateCoverPicture, updateDetails, addFriend, cancelRequest, follow, unFollow, acceptRequest, unFriend, deleteRequest, search, addSearchHistory, getSearchHistory, removeSearchHistory } = require('../../controllers/userControllers')
+const { newUser, verifiedUser, login, reVerification, findUser, resetCode, verifyCode, changePassword, getUser, updateProfilePicture, updateCoverPicture, updateDetails, addFriend, cancelRequest, follow, unFollow, acceptRequest, unFriend, deleteRequest, search, addSearchHistory, getSearchHistory, removeSearchHistory, getAllFriends } = require('../../controllers/userControllers')
 const { authUser } = require('../../middleware/auth')
 
 router.post('/', newUser)
@@ -26,6 +26,7 @@ router.post('/search/:searchTerm', authUser, search)
 router.put('/addsearchhistory', authUser, addSearchHistory)
 router.get('/getsearchhistory', authUser, getSearchHistory)
 router.put('/removesearchhistory', authUser, removeSearchHistory)
+router.get('/getallfriends', authUser, getAllFriends)
 
 
 module.exports = router
