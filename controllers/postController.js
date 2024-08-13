@@ -22,7 +22,7 @@ exports.getAllPosts = async (req, res) => {
             return Post.find({ user: user }).populate("user", "profilePicture cover fName lName username gender").populate("comments.commentedBy", "profilePicture username fName lName cover").sort({ createdAt: -1 })
         })
         const followingPosts = await (await (Promise.all(promises))).flat()
-        const userPost = await Post.find({ user: req.user.id }).populate("user", "profilePicture cover fName lName username gender")
+        const userPost = await Post.find({ user: req.user.id }).populate("user", "profilePicture cover fName lName username gender").populate("comments.commentedBy", "profilePicture username fName lName cover").sort({ createdAt: -1 })
         followingPosts.push(...[...userPost])
         followingPosts.sort((a, b) => {
             return b.createdAt - a.createdAt
